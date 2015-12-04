@@ -12,7 +12,7 @@ errs Server::deletef(std::string name) {
 
 }
 
-errs Server::dir() {
+void Server::dir() {
 
 }
 
