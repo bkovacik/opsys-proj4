@@ -1,15 +1,15 @@
 #include "server.h"
 
-errs Server::storef(std::string name, uint_32 bytes, std::string contents) {
-
+errs Server::storef(std::string name, uint32_t bytes, std::string contents) {
+    return NOERR;
 }
 
-errs Server::readf(std::string name, uint_32 byte_off, uint_32 length) {
-
+errs Server::readf(std::string name, uint32_t byte_off, uint32_t length) {
+    return NOERR;
 }
 
 errs Server::deletef(std::string name) {
-
+    return NOERR;
 }
 
 void Server::dir() {
@@ -18,5 +18,5 @@ void Server::dir() {
 
 //returns true on success
 bool parseCommand(std::string command) {
-
+    return true;
 }
