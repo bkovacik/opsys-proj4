@@ -1,5 +1,7 @@
 #include <cstdint>
 #include <string>
+#include <sys/types.h>
+#include <sys/socket.h>
 
 enum errs {NOERR, FILEEX, NOFILE};
 
