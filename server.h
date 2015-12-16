@@ -27,7 +27,7 @@ class Server {
 	Disk simulatedStorage;
 
 	errs storef(std::string name, uint32_t bytes, std::string contents);
-	errs readf(std::string name, uint32_t byte_off, uint32_t length);
+	errs readf(std::string name, uint32_t byte_off, uint32_t length, std::string& result);
 	errs deletef(std::string name);
 	std::string dir();
 

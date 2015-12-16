@@ -32,7 +32,7 @@ errs Server::storef(std::string name, uint32_t bytes, std::string contents) {
 	return NOERR;
 }
 
-errs Server::readf(std::string name, uint32_t byte_off, uint32_t length) {
+errs Server::readf(std::string name, uint32_t byte_off, uint32_t length, std::string& result) {
 	struct stat st;
 
 	if (stat(direct.c_str(), &st))
@@ -40,6 +40,19 @@ errs Server::readf(std::string name, uint32_t byte_off, uint32_t length) {
 	else {
 		if (length < 0 || byte_off + length > (uint32_t) st.st_size)
 			return BYTER;
+
+        std::stringstream path;
+        path << direct << "/" << name;
+
+        char res[length + 1];
+
+        std::ifstream infile (path.str().c_str());
+        infile.seekg(byte_off, infile.beg);
+        infile.read(res, length);
+
+        res[length] = '\0';
+
+        result.assign(res);
 	}
 	return NOERR;
 }
@@ -133,7 +146,24 @@ void* parseCommand(void* argv) {
             }
 		}
 		else if (command.substr(0, 4) == "READ") {
+            int start = command.find(' ');
+            int end = command.substr(5).find(' ') + 5;
 
+            std::string filename = command.substr(5, end - 5);
+
+            start = end + 1;
+            end = command.substr(start).find(' ') + start;
+
+            int offset = atoi(command.substr(start, end - start).c_str());
+
+            start = end + 1;
+            end = command.substr(start).find('\n') + start;
+
+            int bytes = atoi(command.substr(start, end - start).c_str());
+
+            if (arga->server->readf(filename, offset, bytes, result) < 0) {
+                return NULL;
+            }
 		}
 		else if (command.substr(0, 6) == "DELETE") {
 			if (arga->server->deletef(command.substr(7)))
