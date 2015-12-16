@@ -1,3 +1,6 @@
+/**
+ * Authors: Ian Chamberlain and Brian Kovacik
+ */
 #ifndef DISK_H
 #define DISK_H
 
@@ -54,6 +57,9 @@ public:
 
     // deallocFile - deallocates disk space for a file and deletes
     int deallocFile(const std::string& name);
+
+    int getBlocksize() const { return blocksize; }
+    int getN_blocks() const { return n_blocks; }
 };
 
 #endif

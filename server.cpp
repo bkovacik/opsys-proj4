@@ -1,3 +1,6 @@
+/**
+ * Authors: Ian Chamberlain and Brian Kovacik
+ */
 #include "server.h"
 
 #include <sys/stat.h>
@@ -18,34 +21,34 @@
 std::string Server::storef(std::string name, uint32_t bytes, std::string contents) {
 	struct stat st;
 
-	if (stat(direct.c_str(), &st))
+    std::stringstream path;
+    path << direct << "/" << name;
+
+	if (!stat(path.str().c_str(), &st))
 		return errout(FILEEX);
-	else {
-        if (simulatedStorage.allocFile(name, bytes) < 0) {
-            	return errout(FILEEX);  // file exists already in simulated storage
-        }
 
-        std::stringstream path;
-        path << direct << "/" << name;
+    if (simulatedStorage.allocFile(name, bytes) < 0) {
+            return errout(FILEEX);  // file exists already in simulated storage
+    }
 
-        std::ofstream outfile (path.str().c_str());
-        outfile << contents;
-        outfile.close();
-	}
+    std::ofstream outfile (path.str().c_str());
+    outfile << contents;
+    outfile.close();
 	return errout(NOERR);
 }
 
 std::string Server::readf(std::string name, uint32_t byte_off, uint32_t length) {
 	struct stat st;
 
-	if (stat(direct.c_str(), &st))
+    std::stringstream path;
+    path << direct << "/" << name;
+
+	if (stat(path.str().c_str(), &st))
 		return errout(NOFILE);
 
     if (length < 0 || byte_off + length > (uint32_t) st.st_size)
         return errout(BYTER);
 
-    std::stringstream path;
-    path << direct << "/" << name;
 
     char res[length + 1];
 
@@ -55,7 +58,10 @@ std::string Server::readf(std::string name, uint32_t byte_off, uint32_t length) 
 
     res[length] = '\0';
 
-	return errout(NOERR) + std::string(res);
+    std::stringstream result;
+    result << "ACK " << length << "\n" << res;
+
+	return result.str();
 }
 
 std::string Server::deletef(std::string name) {
@@ -63,8 +69,6 @@ std::string Server::deletef(std::string name) {
 
 	std::string path(direct);
 	path = path + '/' + name.substr(0, name.length()-1);
-
-	send(4, "HEY", 3, 0);
 
 	if (stat(path.c_str(), &st))
 		return errout(NOFILE);
