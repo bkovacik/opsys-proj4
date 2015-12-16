@@ -73,11 +73,11 @@ std::string Server::dir() {
 	return name;
 }
 
-//returns true on success
-bool parseCommand(struct args argv) {
+void* parseCommand(void* argv) {
+	args* arga = (args*) argv;
 	char buffer[BUFFERSIZE];
 	int n;
-	while ((n = recv(socket, buffer, BUFFERSIZE, 0))) {
+	while ((n = recv(arga->socket, buffer, BUFFERSIZE, 0))) {
 		buffer[n] = '\0';
 		printf("%s", buffer);
 		fflush(0);
@@ -92,15 +92,15 @@ bool parseCommand(struct args argv) {
 
 		}
 		else if (command.substr(0, 6) == "DELETE") {
-			if (argv.server->deletef(command.substr(6)))
-				return false;	
+			if (arga->server->deletef(command.substr(6)))
+				return NULL;
 		}
 		else if (command.substr(0, 3) == "DIR")
-			result = argv.server->dir();
+			result = arga->server->dir();
 		
 	}
 
-	return true;
+	return NULL;
 }
 
 void Server::run() {
@@ -118,10 +118,8 @@ void Server::run() {
 
 	struct sockaddr_in client;
 	int fromlen = sizeof(client);
-	char buffer[BUFFERSIZE];
 	while (1) {
 		int newsock = accept(sock, (struct sockaddr*) &client, (socklen_t*) &fromlen);
-		int n;
 		pthread_t t;
 
 		struct args argv;

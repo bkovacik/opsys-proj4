@@ -18,10 +18,10 @@ struct args {
 	Server* server;
 };
 
-bool parseCommand(struct args argv);
+void* parseCommand(void* argv);
 
 class Server {
-	friend bool parseCommand(struct args argv);
+	friend void* parseCommand(void* argv);
 
 	std::string direct;
 	Disk simulatedStorage;
