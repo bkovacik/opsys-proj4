@@ -1,6 +1,9 @@
 #include "server.h"
 
 #include <sys/stat.h>
+#include <sys/socket.h>
+#include <arpa/inet.h>
+#include <unistd.h>
 #include <dirent.h>
 #include <string>
 #include <vector>
@@ -63,21 +66,43 @@ std::string Server::dir() {
 }
 
 //returns true on success
-bool parseCommand(std::string command) {
-	string result;
+bool Server::parseCommand(std::string command) {
+	std::string result;
 
 	if (command.substr(0, 5) == "STORE") {
 
 	}
-	else if (command.substr(0, 4 == "READ") {
+	else if (command.substr(0, 4) == "READ") {
 
 	}
-	else if (command.substr(0, 6 == "DELETE") {
+	else if (command.substr(0, 6) == "DELETE") {
 		if (deletef(command.substr(6)))
 			return false;	
 	}
-	else if (command.substr(0, 3 == "DIR")
+	else if (command.substr(0, 3) == "DIR")
 		result = dir();
 
 	return true;
+}
+
+void Server::run() {
+	int sock = socket(PF_INET, SOCK_STREAM, 0);
+	struct sockaddr_in server;
+
+	server.sin_family = PF_INET;
+	server.sin_addr.s_addr = INADDR_ANY;
+
+	server.sin_port = htons(PORT);
+	int len = sizeof(server);
+
+	bind(sock, (struct sockaddr*) &server, len);
+	listen(sock, CLIENTS);
+
+	struct sockaddr_in client;
+	int fromlen = sizeof(client);
+	while (1) {
+		int newsock = accept(sock, (struct sockaddr*) &client, (socklen_t*) &fromlen);
+		recv(
+	}
+
 }
