@@ -86,7 +86,21 @@ void* parseCommand(void* argv) {
 		std::string command(buffer);
 
 		if (command.substr(0, 5) == "STORE") {
+            int start = command.find(' ');
+            int end = command.substr(6).find(' ');
 
+            std::string filename = command.substr(6, end);
+
+            start = end + 1;
+            end = command.substr(end).find('\n');
+
+            int bytes = atoi(command.substr(start, end).c_str());
+
+            std::string data = command.substr(end);
+
+            if (arga->server->storef(filename, bytes, data)) {
+                return NULL;
+            }
 		}
 		else if (command.substr(0, 4) == "READ") {
 
