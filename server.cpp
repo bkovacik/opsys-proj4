@@ -55,8 +55,12 @@ errs Server::deletef(std::string name) {
 	else
 		remove(path.c_str());
 
-	if (simulatedStorage.deallocFile(name) < 0)
+	if (simulatedStorage.deallocFile(name.substr(0, name.length()-1)) < 0) {
+#ifdef DEBUG_MODE
+        std::cout << "file not found in sim" << std::endl;
+#endif
 		return NOFILE;
+    }
 	
 	return NOERR;
 }
