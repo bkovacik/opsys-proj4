@@ -69,6 +69,9 @@ int Disk::allocFile(const std::string& name, int num_bytes) {
         if(itr->second.getDisplayChar() == '.' && num_blocks > 0) {
             // if the remainder of the file fits, split the cluster
             if (itr->second.getSize() >= num_blocks) {
+#ifdef DEBUG_MODE
+                std::cout << "found open cluster of size " << itr->second.getSize() << std::endl;
+#endif
                 int next_size = itr->second.getSize() - num_blocks;
 
                 DiskCluster newAlloc (num_blocks, name, nextFileChar);
@@ -156,12 +159,32 @@ int Disk::deallocFile(const std::string& name) {
 
     // deallocate all of the blocks
     while (itr != diskSpace.end()) {
-        DiskCluster tmp (itr->second.getSize(), "", '.');
         index = itr->second.getNextCluster();
 
+        int thisClusterSize = itr->second.getSize();
         blocks += itr->second.getSize();
 
-        diskSpace[itr->first] = tmp;
+        // check prev and next chunks as well
+        std::map<int, DiskCluster>::iterator tmpItr = itr;
+        tmpItr++;
+        if (tmpItr->second.getDisplayChar() == '.') {
+            blocks += tmpItr->second.getSize();
+            thisClusterSize += tmpItr->second.getSize();
+            diskSpace.erase(tmpItr);
+        }
+        tmpItr = itr;
+        tmpItr--;
+
+        if (tmpItr->second.getDisplayChar() == '.') {
+            blocks += tmpItr->second.getSize();
+            thisClusterSize += tmpItr->second.getSize();
+            DiskCluster tmp (thisClusterSize, "", '.');
+            diskSpace[tmpItr->first] = tmp;
+        }
+        else {
+            DiskCluster tmp (thisClusterSize, "", '.');
+            diskSpace[itr->first] = tmp;
+        }
         itr = diskSpace.find(index);
     }
 
