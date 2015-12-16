@@ -9,6 +9,8 @@
 #include <string>
 #include <vector>
 #include <algorithm>
+#include <fstream>
+#include <sstream>
 
 errs Server::storef(std::string name, uint32_t bytes, std::string contents) {
 	struct stat st;
@@ -19,6 +21,13 @@ errs Server::storef(std::string name, uint32_t bytes, std::string contents) {
         if (simulatedStorage.allocFile(name, bytes) < 0) {
             return FILEEX;  // file exists already in simulated storage
         }
+
+        std::stringstream path;
+        path << ".storage/" << name;
+
+        std::ofstream outfile (path.str().c_str());
+        outfile << contents;
+        outfile.close();
 	}
 	return NOERR;
 }
