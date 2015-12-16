@@ -4,6 +4,8 @@
 #include <cstdio>
 #include <iostream>
 
+#include "server.h"
+
 #define STORAGE ".storage"
 
 using namespace std;
@@ -34,9 +36,11 @@ if (ent->d_name[0] != '.')
 		}
 		else {
 			cout << "Ok, exiting...\n";
+		Server server(STORAGE);
+		cout << server.dir();	
 			return 0;
 		}
-			
+	
 	}
 
 	return 0;

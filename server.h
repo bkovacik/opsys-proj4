@@ -3,15 +3,20 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 
-enum errs {NOERR, FILEEX, NOFILE};
+enum errs {NOERR, FILEEX, NOFILE, BYTER, MISC};
 
 class Server {
+	std::string direct;
+
+  public:
 	errs storef(std::string name, uint32_t bytes, std::string contents);
 	errs readf(std::string name, uint32_t byte_off, uint32_t length);
 	errs deletef(std::string name);
-	void dir();
+	std::string dir();
 
-  public:
+	Server(std::string direct) {
+		this->direct = direct;
+	}
 	//returns true on success
 	bool parseCommand(std::string command);
 };
