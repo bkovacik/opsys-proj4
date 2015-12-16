@@ -74,21 +74,31 @@ std::string Server::dir() {
 }
 
 //returns true on success
-bool Server::parseCommand(std::string command) {
-	std::string result;
+bool parseCommand(struct args argv) {
+	char buffer[BUFFERSIZE];
+	int n;
+	while ((n = recv(socket, buffer, BUFFERSIZE, 0))) {
+		buffer[n] = '\0';
+		printf("%s", buffer);
+		fflush(0);
 
-	if (command.substr(0, 5) == "STORE") {
+		std::string result;
+		std::string command(buffer);
 
-	}
-	else if (command.substr(0, 4) == "READ") {
+		if (command.substr(0, 5) == "STORE") {
 
+		}
+		else if (command.substr(0, 4) == "READ") {
+
+		}
+		else if (command.substr(0, 6) == "DELETE") {
+			if (argv.server->deletef(command.substr(6)))
+				return false;	
+		}
+		else if (command.substr(0, 3) == "DIR")
+			result = argv.server->dir();
+		
 	}
-	else if (command.substr(0, 6) == "DELETE") {
-		if (deletef(command.substr(6)))
-			return false;	
-	}
-	else if (command.substr(0, 3) == "DIR")
-		result = dir();
 
 	return true;
 }
@@ -112,13 +122,13 @@ void Server::run() {
 	while (1) {
 		int newsock = accept(sock, (struct sockaddr*) &client, (socklen_t*) &fromlen);
 		int n;
-		while ((n = recv(newsock, buffer, BUFFERSIZE, 0))) {
-			buffer[n] = '\0';
-			printf("%s", buffer);
-			fflush(0);
-		}
-		printf("Client closed...");
-		fflush(0);
+		pthread_t t;
+
+		struct args argv;
+		argv.socket = newsock;
+		argv.server = this;
+
+		pthread_create(&t, NULL, parseCommand, argv);
 	}
 
 }

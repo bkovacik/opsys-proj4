@@ -11,6 +11,15 @@
 
 enum errs {NOERR, FILEEX, NOFILE, BYTER, MISC};
 
+class Server;
+
+struct args {
+	int socket;
+	Server* server;
+};
+
+bool parseCommand(struct args argv);
+
 class Server {
 	std::string direct;
 	Disk simulatedStorage;
@@ -24,7 +33,5 @@ class Server {
 	Server(std::string direct) {
 		this->direct = direct;
 	}
-	//returns true on success
-	bool parseCommand(std::string command);
 	void run();
 };
