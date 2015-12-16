@@ -13,6 +13,7 @@
 #include <algorithm>
 #include <fstream>
 #include <sstream>
+#include <iostream>
 
 std::string Server::storef(std::string name, uint32_t bytes, std::string contents) {
 	struct stat st;
@@ -120,8 +121,7 @@ void* parseCommand(void* argv) {
 	int n;
 	while ((n = recv(arga->socket, buffer, BUFFERSIZE, 0))) {
 		buffer[n] = '\0';
-		printf("%s", buffer);
-		fflush(0);
+		std::cout << "[thread " << (unsigned int) pthread_self() << "] Rcvd: " << buffer;
 
 		std::string result;
 		std::string command(buffer);
@@ -176,7 +176,8 @@ void* parseCommand(void* argv) {
 			result = arga->server->deletef(command.substr(7));
 		else if (command.substr(0, 3) == "DIR")
 			result = arga->server->dir();
-	
+
+		std::cout << "[thread " << (unsigned int) pthread_self() << "] Sent: " << result.c_str() << std::endl;
 		send(arga->socket, result.c_str(), result.length(), 0);
 		fflush(0);
 	

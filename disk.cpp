@@ -24,7 +24,7 @@ Disk::Disk(int n, int size) {
 // printSpace - print the disk system as it is
 void Disk::printSpace() {
 
-    std::cout << "[thread " << pthread_self() << "] Simulated Disk Space Allocation:" << std::endl;
+    std::cout << "[thread " << pthread_self() << "] Simulated Clustered Disk Space Allocation:" << std::endl;
     std::cout << std::string(n_blocks / 4, '=');
 
     std::map<int, DiskCluster>::const_iterator itr = diskSpace.begin();
