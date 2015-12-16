@@ -37,7 +37,7 @@ if (ent->d_name[0] != '.')
 		else {
 			cout << "Ok, exiting...\n";
 		Server server(STORAGE);
-		cout << server.dir();	
+		server.run();
 			return 0;
 		}
 	

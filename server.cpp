@@ -15,7 +15,9 @@ errs Server::storef(std::string name, uint32_t bytes, std::string contents) {
 	if (!stat(direct.c_str(), &st))
 		return FILEEX;
 	else {
-
+        if (simulatedStorage.allocFile(name, bytes) < 0) {
+            return FILEEX;  // file exists already in simulated storage
+        }
 	}
 	return NOERR;
 }
@@ -39,6 +41,11 @@ errs Server::deletef(std::string name) {
 		return NOFILE;
 	else
 		remove(name.c_str());
+
+    if (simulatedStorage.deallocFile(name) < 0) {
+        return NOFILE;
+    }
+
 	return NOERR;
 }
 

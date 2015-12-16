@@ -1,5 +1,9 @@
 #include <cstdint>
 #include <string>
+#include <sys/types.h>
+#include <sys/socket.h>
+
+#include "disk.h"
 
 #define PORT 8765
 #define CLIENTS 5
@@ -9,6 +13,7 @@ enum errs {NOERR, FILEEX, NOFILE, BYTER, MISC};
 
 class Server {
 	std::string direct;
+	Disk simulatedStorage;
 
 	errs storef(std::string name, uint32_t bytes, std::string contents);
 	errs readf(std::string name, uint32_t byte_off, uint32_t length);
