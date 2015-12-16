@@ -13,7 +13,7 @@
 errs Server::storef(std::string name, uint32_t bytes, std::string contents) {
 	struct stat st;
 
-	if (!stat(direct.c_str(), &st))
+	if (stat(direct.c_str(), &st))
 		return FILEEX;
 	else {
         if (simulatedStorage.allocFile(name, bytes) < 0) {
@@ -87,18 +87,31 @@ void* parseCommand(void* argv) {
 
 		if (command.substr(0, 5) == "STORE") {
             int start = command.find(' ');
-            int end = command.substr(6).find(' ');
+            int end = command.substr(6).find(' ') + 6;
 
-            std::string filename = command.substr(6, end);
+            std::string filename = command.substr(6, end - 6);
 
             start = end + 1;
-            end = command.substr(end).find('\n');
+            end = command.substr(start).find('\n') + start;
+#ifdef DEBUG_MODE
+            std::cout << "byte string is '" << command.substr(start, end - start) << "'" << std::endl;
+#endif
 
-            int bytes = atoi(command.substr(start, end).c_str());
+            int bytes = atoi(command.substr(start, end - start).c_str());
 
-            std::string data = command.substr(end);
+            char data[bytes + 1];
+            recv(arga->socket, data, bytes, 0);
+            data[bytes] = '\0';
 
-            if (arga->server->storef(filename, bytes, data)) {
+            // print out the data we received
+            printf("%s\n", data);
+
+#ifdef DEBUG_MODE
+            std::cout << "storing file '" << filename << "' of size " << bytes;
+            std::cout << " with data '" << data << "'" << std::endl;
+#endif
+
+            if (arga->server->storef(filename, bytes, std::string(data))) {
                 return NULL;
             }
 		}
