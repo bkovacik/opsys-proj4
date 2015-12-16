@@ -21,6 +21,8 @@ struct args {
 bool parseCommand(struct args argv);
 
 class Server {
+	friend bool parseCommand(struct args argv);
+
 	std::string direct;
 	Disk simulatedStorage;
 

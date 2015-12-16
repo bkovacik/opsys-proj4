@@ -128,7 +128,7 @@ void Server::run() {
 		argv.socket = newsock;
 		argv.server = this;
 
-		pthread_create(&t, NULL, parseCommand, argv);
+		pthread_create(&t, NULL, parseCommand, static_cast<void*>(&argv));
 	}
 
 }
