@@ -1,3 +1,6 @@
+/**
+ * Authors: Ian Chamberlain and Brian Kovacik
+ */
 #include <cstdint>
 #include <string>
 #include <sys/types.h>

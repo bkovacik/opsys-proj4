@@ -1,3 +1,6 @@
+/**
+ * Authors: Ian Chamberlain and Brian Kovacik
+ */
 #include "server.h"
 
 #include <sys/stat.h>

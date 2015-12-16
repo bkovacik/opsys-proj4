@@ -1,3 +1,6 @@
+/**
+ * Authors: Ian Chamberlain and Brian Kovacik
+ */
 #include "disk.h"
 
 Disk::Disk() {
