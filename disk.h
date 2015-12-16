@@ -46,6 +46,9 @@ public:
     Disk();
     Disk(int n, int size);
 
+    int getN_blocks() { return n_blocks; }
+    int getBlocksize() { return blocksize; }
+
     // allocFile - returns the int for the first cluster allocated for a file
     int allocFile(const std::string& name, int num_bytes);
 
