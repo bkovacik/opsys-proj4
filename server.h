@@ -35,5 +35,6 @@ class Server {
 	Server(std::string direct) {
 		this->direct = direct;
 	}
+	std::string getDirect() { return direct; }
 	void run();
 };

@@ -40,13 +40,16 @@ errs Server::deletef(std::string name) {
 
 	if (stat(direct.c_str(), &st))
 		return NOFILE;
-	else
-		remove(name.c_str());
+	else {
+		std::string path(direct);
+		path = path + "/" + name;
+		remove(path.c_str());
+fprintf(stderr, "%s", path.c_str());
+	}
 
-    if (simulatedStorage.deallocFile(name) < 0) {
-        return NOFILE;
-    }
-
+	if (simulatedStorage.deallocFile(name) < 0)
+		return NOFILE;
+	
 	return NOERR;
 }
 
@@ -86,32 +89,35 @@ void* parseCommand(void* argv) {
 		std::string command(buffer);
 
 		if (command.substr(0, 5) == "STORE") {
-            int start = command.find(' ');
-            int end = command.substr(6).find(' ');
+			int start = command.find(' ');
+			int end = command.substr(6).find(' ');
 
-            std::string filename = command.substr(6, end);
+			std::string filename = command.substr(7, end);
 
-            start = end + 1;
-            end = command.substr(end).find('\n');
+			start = end + 1;
+			end = command.substr(end).find('\n');
 
-            int bytes = atoi(command.substr(start, end).c_str());
+			int bytes = atoi(command.substr(start, end).c_str());
 
-            std::string data = command.substr(end);
+			std::string data = command.substr(end);
 
-            if (arga->server->storef(filename, bytes, data)) {
-                return NULL;
-            }
+			if (arga->server->storef(filename, bytes, data)) {
+				return NULL;
+			}
 		}
 		else if (command.substr(0, 4) == "READ") {
 
 		}
 		else if (command.substr(0, 6) == "DELETE") {
-			if (arga->server->deletef(command.substr(6)))
+			if (arga->server->deletef(command.substr(7)))
 				return NULL;
 		}
 		else if (command.substr(0, 3) == "DIR")
 			result = arga->server->dir();
-		
+	
+		printf("%s", result.c_str());
+		fflush(0);
+	
 	}
 
 	return NULL;
