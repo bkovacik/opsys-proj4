@@ -6,6 +6,8 @@
 #include <pthread.h>
 #include <unistd.h>
 #include <dirent.h>
+#include <netdb.h>
+
 #include <string>
 #include <vector>
 #include <algorithm>
@@ -198,8 +200,16 @@ void Server::run() {
 
 	struct sockaddr_in client;
 	int fromlen = sizeof(client);
+
+	std::cout << "Block size is " << simulatedStorage.getBlocksize() << std::endl;
+	std::cout << "Number of blocks is " << simulatedStorage.getN_blocks() << std::endl;
+	std::cout << "Listening on port " << PORT << std::endl;
+
 	while (1) {
 		int newsock = accept(sock, (struct sockaddr*) &client, (socklen_t*) &fromlen);
+		char hostname[BUFFERSIZE], sbuf[BUFFERSIZE];
+		getnameinfo((struct sockaddr*) &client, (socklen_t) fromlen, hostname, sizeof(hostname), sbuf, sizeof(sbuf), 0);
+		std::cout << "Received incoming connection from " << hostname << std::endl;
 		pthread_t t;
 
 		struct args argv;
