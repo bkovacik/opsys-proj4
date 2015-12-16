@@ -37,24 +37,22 @@ std::string Server::readf(std::string name, uint32_t byte_off, uint32_t length) 
 
 	if (stat(direct.c_str(), &st))
 		return errout(NOFILE);
-	else {
-		if (length < 0 || byte_off + length > (uint32_t) st.st_size)
-			return errout(BYTER);
 
-        std::stringstream path;
-        path << direct << "/" << name;
+    if (length < 0 || byte_off + length > (uint32_t) st.st_size)
+        return errout(BYTER);
 
-        char res[length + 1];
+    std::stringstream path;
+    path << direct << "/" << name;
 
-        std::ifstream infile (path.str().c_str());
-        infile.seekg(byte_off, infile.beg);
-        infile.read(res, length);
+    char res[length + 1];
 
-        res[length] = '\0';
+    std::ifstream infile (path.str().c_str());
+    infile.seekg(byte_off, infile.beg);
+    infile.read(res, length);
 
-        result.assign(res);
-	}
-	return errout(NOERR);
+    res[length] = '\0';
+
+	return errout(NOERR) + std::string(res);
 }
 
 std::string Server::deletef(std::string name) {
@@ -103,7 +101,7 @@ std::string Server::dir() {
 	return name;
 }
 
-std::string errout(errs err) {
+std::string Server::errout(errs err) {
 	switch (err) {
 		case NOERR: return "ACK\n";
 		case FILEEX: return "ERROR: FILE EXISTS\n";
