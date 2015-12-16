@@ -12,14 +12,14 @@
 #include <fstream>
 #include <sstream>
 
-errs Server::storef(std::string name, uint32_t bytes, std::string contents) {
+std::string Server::storef(std::string name, uint32_t bytes, std::string contents) {
 	struct stat st;
 
 	if (stat(direct.c_str(), &st))
-		return FILEEX;
+		return errout(FILEEX);
 	else {
         if (simulatedStorage.allocFile(name, bytes) < 0) {
-            return FILEEX;  // file exists already in simulated storage
+            	return(FILEEX);  // file exists already in simulated storage
         }
 
         std::stringstream path;
@@ -29,22 +29,22 @@ errs Server::storef(std::string name, uint32_t bytes, std::string contents) {
         outfile << contents;
         outfile.close();
 	}
-	return NOERR;
+	return errout(NOERR);
 }
 
-errs Server::readf(std::string name, uint32_t byte_off, uint32_t length) {
+std::string Server::readf(std::string name, uint32_t byte_off, uint32_t length) {
 	struct stat st;
 
 	if (stat(direct.c_str(), &st))
-		return NOFILE;
+		return errout(NOFILE);
 	else {
 		if (length < 0 || byte_off + length > (uint32_t) st.st_size)
-			return BYTER;
+			return errout(BYTER);
 	}
-	return NOERR;
+	return errout(NOERR);
 }
 
-errs Server::deletef(std::string name) {
+std::string Server::deletef(std::string name) {
 	struct stat st;
 
 	std::string path(direct);
@@ -53,7 +53,7 @@ errs Server::deletef(std::string name) {
 	send(4, "HEY", 3, 0);
 
 	if (stat(path.c_str(), &st))
-		return NOFILE;
+		return errout(NOFILE);
 	else
 		remove(path.c_str());
 
@@ -61,10 +61,10 @@ errs Server::deletef(std::string name) {
 #ifdef DEBUG_MODE
         std::cout << "file not found in sim" << std::endl;
 #endif
-		return NOFILE;
+		return errout(NOFILE);
     }
 	
-	return NOERR;
+	return errout(NOERR);
 }
 
 std::string Server::dir() {
@@ -88,6 +88,16 @@ std::string Server::dir() {
 	name += "\n";
 
 	return name;
+}
+
+std::string errout(errs err) {
+	switch (err) {
+		case NOERR: return "ACK\n";
+		case FILEEX: return "ERROR: FILE EXISTS\n";
+		case NOFILE: return "ERROR: NO SUCH FILE\n";
+		case BYTER: return "ERROR: INVALID BYTE RANGE\n";
+		case MISC: break;
+	}
 }
 
 void* parseCommand(void* argv) {
@@ -133,12 +143,9 @@ void* parseCommand(void* argv) {
             }
 		}
 		else if (command.substr(0, 4) == "READ") {
-
 		}
-		else if (command.substr(0, 6) == "DELETE") {
-			if (arga->server->deletef(command.substr(7)))
-				return NULL;
-		}
+		else if (command.substr(0, 6) == "DELETE")
+			result = arga->server->deletef(command.substr(7));
 		else if (command.substr(0, 3) == "DIR")
 			result = arga->server->dir();
 	

@@ -26,10 +26,11 @@ class Server {
 	std::string direct;
 	Disk simulatedStorage;
 
-	errs storef(std::string name, uint32_t bytes, std::string contents);
-	errs readf(std::string name, uint32_t byte_off, uint32_t length);
-	errs deletef(std::string name);
+	std::string storef(std::string name, uint32_t bytes, std::string contents);
+	std::string readf(std::string name, uint32_t byte_off, uint32_t length);
+	std::string deletef(std::string name);
 	std::string dir();
+	std::string errout(errs err);
 
   public:
 	Server(std::string direct) {
