@@ -47,10 +47,10 @@ public:
     Disk(int n, int size);
 
     // allocFile - returns the int for the first cluster allocated for a file
-    int allocFile(const std::string& name, int num_blocks);
+    int allocFile(const std::string& name, int num_bytes);
 
     // deallocFile - deallocates disk space for a file and deletes
-    void deallocFile(const std::string& name);
+    int deallocFile(const std::string& name);
 };
 
 #endif

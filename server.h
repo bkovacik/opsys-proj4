@@ -3,10 +3,13 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 
+#include "disk.h"
+
 enum errs {NOERR, FILEEX, NOFILE, BYTER, MISC};
 
 class Server {
 	std::string direct;
+    Disk simulatedStorage;
 
   public:
 	errs storef(std::string name, uint32_t bytes, std::string contents);

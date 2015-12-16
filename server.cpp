@@ -12,7 +12,9 @@ errs Server::storef(std::string name, uint32_t bytes, std::string contents) {
 	if (!stat(direct.c_str(), &st))
 		return FILEEX;
 	else {
-
+        if (simulatedStorage.allocFile(name, bytes) < 0) {
+            return FILEEX;  // file exists already in simulated storage
+        }
 	}
 	return NOERR;
 }
@@ -36,6 +38,11 @@ errs Server::deletef(std::string name) {
 		return NOFILE;
 	else
 		remove(name.c_str());
+
+    if (simulatedStorage.deallocFile(name) < 0) {
+        return NOFILE;
+    }
+
 	return NOERR;
 }
 
@@ -63,20 +70,20 @@ std::string Server::dir() {
 }
 
 //returns true on success
-bool parseCommand(std::string command) {
-	string result;
+bool Server::parseCommand(std::string command) {
+    std::string result;
 
 	if (command.substr(0, 5) == "STORE") {
 
 	}
-	else if (command.substr(0, 4 == "READ") {
+	else if (command.substr(0, 4) == "READ") {
 
 	}
-	else if (command.substr(0, 6 == "DELETE") {
+	else if (command.substr(0, 6) == "DELETE") {
 		if (deletef(command.substr(6)))
 			return false;	
 	}
-	else if (command.substr(0, 3 == "DIR")
+	else if (command.substr(0, 3) == "DIR")
 		result = dir();
 
 	return true;

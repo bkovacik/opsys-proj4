@@ -136,11 +136,10 @@ int Disk::allocFile(const std::string& name, int num_bytes) {
 }
 
 // deallocFile - deallocates disk space for a file and deletes
-void Disk::deallocFile(const std::string& name) {
+int Disk::deallocFile(const std::string& name) {
 
     if (fileMap.find(name) == fileMap.end()) {
-        // TODO: print an error message
-        return;
+        return -1;  // error noFile
     }
 
     int index = fileMap.find(name)->second;
@@ -148,9 +147,8 @@ void Disk::deallocFile(const std::string& name) {
     std::map<int, DiskCluster>::iterator itr = diskSpace.find(index);
 
     if (itr == diskSpace.end()) {
-        // TODO: print an error message
         // this probably shouldn't ever occur
-        return;
+        return -1;  // error noFile
     }
 
     char display = itr->second.getDisplayChar();
@@ -178,6 +176,8 @@ void Disk::deallocFile(const std::string& name) {
         std::cout << blocks << " blocks)" << std::endl;
 
     printSpace();
+
+    return 0;
 }
 
 // we need a default constructor to use with std::map
