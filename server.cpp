@@ -142,7 +142,7 @@ void* parseCommand(void* argv) {
 		else if (command.substr(0, 3) == "DIR")
 			result = arga->server->dir();
 	
-		printf("%s", result.c_str());
+		send(arga->socket, result.c_str(), result.length(), 0);
 		fflush(0);
 	
 	}
