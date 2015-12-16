@@ -19,7 +19,7 @@ std::string Server::storef(std::string name, uint32_t bytes, std::string content
 		return errout(FILEEX);
 	else {
         if (simulatedStorage.allocFile(name, bytes) < 0) {
-            	return(FILEEX);  // file exists already in simulated storage
+            	return errout(FILEEX);  // file exists already in simulated storage
         }
 
         std::stringstream path;
@@ -111,6 +111,7 @@ std::string errout(errs err) {
 		case BYTER: return "ERROR: INVALID BYTE RANGE\n";
 		case MISC: break;
 	}
+	return "";
 }
 
 void* parseCommand(void* argv) {
@@ -151,7 +152,7 @@ void* parseCommand(void* argv) {
 		    std::cout << " with data '" << data << "'" << std::endl;
 	#endif
 
-		    result = (arga->server->storef(filename, bytes, std::string(data))) {
+		    result = (arga->server->storef(filename, bytes, std::string(data)));
 		}
 		else if (command.substr(0, 4) == "READ") {
 		    int start = command.find(' ');
@@ -169,10 +170,7 @@ void* parseCommand(void* argv) {
 
 		    int bytes = atoi(command.substr(start, end - start).c_str());
 
-		     result = arga->server->readf(filename, offset, bytes, result)}
-		}
-		else if (command.substr(0, 6) == "DELETE") {
-			result = arga->server->deletef(command.substr(7));
+		     result = arga->server->readf(filename, offset, bytes);
 		}
 		else if (command.substr(0, 6) == "DELETE")
 			result = arga->server->deletef(command.substr(7));
