@@ -3,6 +3,7 @@
 #include <sys/stat.h>
 #include <sys/socket.h>
 #include <arpa/inet.h>
+#include <pthread.h>
 #include <unistd.h>
 #include <dirent.h>
 #include <string>
@@ -107,9 +108,17 @@ void Server::run() {
 
 	struct sockaddr_in client;
 	int fromlen = sizeof(client);
+	char buffer[BUFFERSIZE];
 	while (1) {
 		int newsock = accept(sock, (struct sockaddr*) &client, (socklen_t*) &fromlen);
-		recv(
+		int n;
+		while ((n = recv(newsock, buffer, BUFFERSIZE, 0))) {
+			buffer[n] = '\0';
+			printf("%s", buffer);
+			fflush(0);
+		}
+		printf("Client closed...");
+		fflush(0);
 	}
 
 }
