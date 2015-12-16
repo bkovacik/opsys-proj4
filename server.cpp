@@ -187,6 +187,8 @@ void* parseCommand(void* argv) {
 	
 	}
 
+	std::cout << "[thread " << (unsigned int) pthread_self() << "] Client closed its socket...terminating\n";
+
 	return NULL;
 }
 
