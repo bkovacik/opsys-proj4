@@ -50,6 +50,8 @@ errs Server::deletef(std::string name) {
 	std::string path(direct);
 	path = path + '/' + name.substr(0, name.length()-1);
 
+	send(4, "HEY", 3, 0);
+
 	if (stat(path.c_str(), &st))
 		return NOFILE;
 	else
