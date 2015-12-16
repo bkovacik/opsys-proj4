@@ -48,14 +48,12 @@ errs Server::deletef(std::string name) {
 	struct stat st;
 
 	std::string path(direct);
-	path = path + '/' + name.substr(name.length()-2);
+	path = path + '/' + name.substr(0, name.length()-1);
 
 	if (stat(path.c_str(), &st))
 		return NOFILE;
-	else {
+	else
 		remove(path.c_str());
-fprintf(stderr, "%s", path.c_str());
-	}
 
 	if (simulatedStorage.deallocFile(name) < 0)
 		return NOFILE;
