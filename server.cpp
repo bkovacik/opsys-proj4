@@ -23,7 +23,7 @@ errs Server::storef(std::string name, uint32_t bytes, std::string contents) {
         }
 
         std::stringstream path;
-        path << ".storage/" << name;
+        path << direct << "/" << name;
 
         std::ofstream outfile (path.str().c_str());
         outfile << contents;
