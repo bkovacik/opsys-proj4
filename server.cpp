@@ -38,11 +38,12 @@ errs Server::readf(std::string name, uint32_t byte_off, uint32_t length) {
 errs Server::deletef(std::string name) {
 	struct stat st;
 
-	if (stat(direct.c_str(), &st))
+	std::string path(direct);
+	path = path + '/' + name.substr(name.length()-2);
+
+	if (stat(path.c_str(), &st))
 		return NOFILE;
 	else {
-		std::string path(direct);
-		path = path + "/" + name;
 		remove(path.c_str());
 fprintf(stderr, "%s", path.c_str());
 	}
