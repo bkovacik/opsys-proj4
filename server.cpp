@@ -49,13 +49,16 @@ errs Server::deletef(std::string name) {
 
 	if (stat(direct.c_str(), &st))
 		return NOFILE;
-	else
-		remove(name.c_str());
+	else {
+		std::string path(direct);
+		path = path + "/" + name;
+		remove(path.c_str());
+fprintf(stderr, "%s", path.c_str());
+	}
 
-    if (simulatedStorage.deallocFile(name) < 0) {
-        return NOFILE;
-    }
-
+	if (simulatedStorage.deallocFile(name) < 0)
+		return NOFILE;
+	
 	return NOERR;
 }
 
@@ -128,12 +131,15 @@ void* parseCommand(void* argv) {
 
 		}
 		else if (command.substr(0, 6) == "DELETE") {
-			if (arga->server->deletef(command.substr(6)))
+			if (arga->server->deletef(command.substr(7)))
 				return NULL;
 		}
 		else if (command.substr(0, 3) == "DIR")
 			result = arga->server->dir();
-		
+	
+		printf("%s", result.c_str());
+		fflush(0);
+	
 	}
 
 	return NULL;
