@@ -40,6 +40,19 @@ std::string Server::readf(std::string name, uint32_t byte_off, uint32_t length) 
 	else {
 		if (length < 0 || byte_off + length > (uint32_t) st.st_size)
 			return errout(BYTER);
+
+        std::stringstream path;
+        path << direct << "/" << name;
+
+        char res[length + 1];
+
+        std::ifstream infile (path.str().c_str());
+        infile.seekg(byte_off, infile.beg);
+        infile.read(res, length);
+
+        res[length] = '\0';
+
+        result.assign(res);
 	}
 	return errout(NOERR);
 }
@@ -113,36 +126,53 @@ void* parseCommand(void* argv) {
 		std::string command(buffer);
 
 		if (command.substr(0, 5) == "STORE") {
-            int start = command.find(' ');
-            int end = command.substr(6).find(' ') + 6;
+		    int start = command.find(' ');
+		    int end = command.substr(6).find(' ') + 6;
 
-            std::string filename = command.substr(6, end - 6);
+		    std::string filename = command.substr(6, end - 6);
 
-            start = end + 1;
-            end = command.substr(start).find('\n') + start;
-#ifdef DEBUG_MODE
-            std::cout << "byte string is '" << command.substr(start, end - start) << "'" << std::endl;
-#endif
+		    start = end + 1;
+		    end = command.substr(start).find('\n') + start;
+	#ifdef DEBUG_MODE
+		    std::cout << "byte string is '" << command.substr(start, end - start) << "'" << std::endl;
+	#endif
 
-            int bytes = atoi(command.substr(start, end - start).c_str());
+		    int bytes = atoi(command.substr(start, end - start).c_str());
 
-            char data[bytes + 1];
-            recv(arga->socket, data, bytes, 0);
-            data[bytes] = '\0';
+		    char data[bytes + 1];
+		    recv(arga->socket, data, bytes, 0);
+		    data[bytes] = '\0';
 
-            // print out the data we received
-            printf("%s\n", data);
+		    // print out the data we received
+		    printf("%s\n", data);
 
-#ifdef DEBUG_MODE
-            std::cout << "storing file '" << filename << "' of size " << bytes;
-            std::cout << " with data '" << data << "'" << std::endl;
-#endif
+	#ifdef DEBUG_MODE
+		    std::cout << "storing file '" << filename << "' of size " << bytes;
+		    std::cout << " with data '" << data << "'" << std::endl;
+	#endif
 
-            if (arga->server->storef(filename, bytes, std::string(data))) {
-                return NULL;
-            }
+		    result = (arga->server->storef(filename, bytes, std::string(data))) {
 		}
 		else if (command.substr(0, 4) == "READ") {
+		    int start = command.find(' ');
+		    int end = command.substr(5).find(' ') + 5;
+
+		    std::string filename = command.substr(5, end - 5);
+
+		    start = end + 1;
+		    end = command.substr(start).find(' ') + start;
+
+		    int offset = atoi(command.substr(start, end - start).c_str());
+
+		    start = end + 1;
+		    end = command.substr(start).find('\n') + start;
+
+		    int bytes = atoi(command.substr(start, end - start).c_str());
+
+		     result = arga->server->readf(filename, offset, bytes, result)}
+		}
+		else if (command.substr(0, 6) == "DELETE") {
+			result = arga->server->deletef(command.substr(7));
 		}
 		else if (command.substr(0, 6) == "DELETE")
 			result = arga->server->deletef(command.substr(7));
